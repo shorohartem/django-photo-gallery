@@ -77,10 +77,6 @@ def reception(request):
     photos = Photo.objects.all().order_by('-id')
     return render(request, 'reception.html', {'photos': photos})
 
-def reception_all(request):
-    photos = Photo.objects.all().order_by('-id')
-    return render(request, 'all_photos.html', {'photos': photos})
-
 def all_photo(request):
     photos = Photo.objects.all().order_by('-id')
     return render(request, 'all_photo.html', {'photos': photos})
