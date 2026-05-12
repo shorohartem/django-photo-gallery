@@ -7,8 +7,6 @@ BASE_URL = "http://localhost:8000"
 
 def test_upload_photo():
     url = f"{BASE_URL}/append"
-
-    # Создаем временное тестовое изображение
     with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
         tmp.write(b"fake_image_content")
         tmp_path = tmp.name
