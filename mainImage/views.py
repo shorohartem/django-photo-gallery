@@ -4,6 +4,9 @@ from django.shortcuts import render, redirect
 from .models import Photo
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def new_page(request):
@@ -11,21 +14,23 @@ def new_page(request):
 
 @csrf_exempt
 def append(request):
-    error = None
-    success = None
+    logger.info(f"request.method: {request.method}")
 
     if request.method == "POST" and request.FILES.get('photo'):
         photo_file = request.FILES.get('photo')
         photo_file.seek(0)
+        logger.info(f"Добавление фото: {photo_file.name} ")
 
         try:
             img = Image.open(photo_file)
             img.verify()
 
             img_format = img.format
+            logger.info(f"Формат фото: {img_format}")
 
             photo_file.seek(0)
             if img_format not in ['JPEG', 'PNG']:
+                logger.info(f"Получен неверный формат [{img_format}]")
                 messages.error(request, 'Неправильный формат фото!!!')
                 return redirect('append')
 
@@ -40,6 +45,7 @@ def append(request):
             image=photo_file
         )
         messages.success(request, 'Фото добавлено!')
+        logger.info(f'Фото {title} добавлено!')
         return redirect('append')
     return render(request, 'append.html')
 
@@ -47,16 +53,19 @@ def append(request):
 def delete(request):
     if request.method == "POST":
         photo_id = request.POST.get('photo_id')
+        logger.info(f'Запрошено удаление фото: {photo_id}')
         if photo_id:
             try:
                 photo = Photo.objects.get(id=photo_id)
                 photo.image.delete()
                 photo.delete()
                 messages.success(request,f"Фото {photo_id} успешно удалено")
-
+                logger.info(f"Фото: {photo_id} удалено")
                 print("successfully deleted", photo_id)
+
             except Photo.DoesNotExist:
                 messages.error(request, f' Фото {photo_id} не найдено!')
+                logger.info(f'Не найдено фото:{photo_id}')
         else:
             messages.error(request, 'Введите ID фото!')
     return render(request, 'delete.html')
@@ -64,14 +73,19 @@ def delete(request):
 
 def reception(request):
     photo_id = request.GET.get('id')
+    logger.info(f" Запрос на получение фото: {photo_id}")
 
     if photo_id:
         try:
             photo = Photo.objects.get(id=photo_id)
+            logger.info(f"Фото получено: {photo_id}")
             return render(request, 'reception.html', {'photo': photo})
+
+
         except Photo.DoesNotExist:
             messages.error(request, f'Нет фото с ID: {photo_id}')
             photos = Photo.objects.all().order_by('-id')
+            logger.info(f"Нет фото с таким ID: {photo_id}")
             return render(request, 'reception.html', {'photos': photos})
 
     photos = Photo.objects.all().order_by('-id')
@@ -79,4 +93,6 @@ def reception(request):
 
 def all_photo(request):
     photos = Photo.objects.all().order_by('-id')
+    logger.info("Получение всех фотографий")
     return render(request, 'all_photo.html', {'photos': photos})
+

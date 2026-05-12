@@ -128,11 +128,40 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/mainImage/photos/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'photos')
 
-
-# Проверка .env (временно)
-print("=" * 50)
-print("ПРОВЕРКА .env:")
-print(f"DEBUG = {DEBUG}")
-print(f"SECRET_KEY = {SECRET_KEY[:20]}...")
-print(f"ALLOWED_HOSTS = {ALLOWED_HOSTS}")
-print("=" * 50)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{asctime} [{levelname}] {message}',
+            'style': '{',
+        },
+        'verbose': {
+            'format': '{asctime} [{levelname}] {name}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'api.log'),
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'mainImage': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
