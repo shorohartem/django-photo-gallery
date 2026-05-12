@@ -1,0 +1,37 @@
+<Doctype html>
+    <html>
+    <head>
+        <title>Получение фотографии</title>
+    </head>
+    <body>
+        <div class="menu">
+            <a href="{% url 'new_page' %}"> Переход на главную стр</a>
+            <a href="{% url 'reception' %}">Получение</a>
+            <a href="{% url 'append' %}">Добавить фотографию </a>
+            <a href="{% url 'delete' %}">Удаление фотографии</a>
+        </div>
+
+
+        <h1>
+            Получить фотографию
+        </h1>
+
+        <form method="GET">
+            <input type="number" name="id" placeholder="Введите ID">
+            <button type="submit">Найти фото</button>
+        </form>
+        <a href="{% url 'all_photo' %}">
+            <button type="submit"> Открыть все фото </button>
+        </a>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="color: red;">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        </a>
+        <div class="single-photo">
+            <img src="/mainImage/photos/{{ photo.image.name }}" alt="{{ photo.title }}">
+        </div>
+    </body>
+    </html>

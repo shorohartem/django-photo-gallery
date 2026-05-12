@@ -1,0 +1,34 @@
+<Doctype html>
+    <html>
+    <head>
+        <title>Удаление фотографии</title>
+    </head>
+    <body>
+        <div class="menu">
+            <a href="{% url 'new_page' %}"> Переход на главную стр</a>
+            <a href="{% url 'reception' %}">Получение</a>
+            <a href="{% url 'append' %}">Добавить фотографию </a>
+            <a href="{% url 'delete' %}">Удаление фотографии</a>
+        </div>
+
+
+        <h1>
+            Удаление фотографии
+        </h1>
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="number" name="photo_id" placeholder="Введите ID" required>
+            <button type="submit">Удалить фото</button>
+        </form>
+        {% if photo_deleted %}
+        <div class="success">Файл удален: {{ deleted_file }}</div>
+        {% endif %}
+    </body>
+    </html>

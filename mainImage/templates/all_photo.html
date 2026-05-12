@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Все фотографии</title>
+</head>
+<body>
+<div class="menu">
+            <a href="{% url 'new_page' %}"> Переход на главную стр</a>
+            <a href="{% url 'reception' %}">Получение</a>
+            <a href="{% url 'append' %}">Добавить фотографию </a>
+            <a href="{% url 'delete' %}">Удаление фотографии</a>
+        </div>
+<a href="{% url 'reception' %}">
+    <button>
+        <—
+    </button>
+</a>
+
+
+<<h2>Все фото</h2>
+        <div class="gallery">
+            {% for photo in photos %}
+                <div>
+                    <img src="{{ photo.image.url }}" width="200">
+                    <p>ID: {{ photo.id }} - {{ photo.title }}</p>
+
+                </div>
+            {% endfor %}
+        </div>
+
+</body>
+</html>

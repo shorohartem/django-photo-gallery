@@ -1,0 +1,36 @@
+<Doctype html>
+    <html>
+    <head>
+        <title>Добавление фотографии</title>
+    </head>
+    <body>
+        <div class="menu">
+            <a href="{% url 'new_page' %}"> Переход на главную стр</a>
+            <a href="{% url 'reception' %}">Получение</a>
+            <a href="{% url 'append' %}">Добавить фотографию </a>
+            <a href="{% url 'delete' %}">Удаление фотографии</a>
+        </div>
+
+        <h1>
+            Загрузка фотографии
+        </h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <input type="file" name="photo" accept="image/png, image/jpeg, image/jpg" required><br><br>
+
+            <button type="submit">Загрузить</button>
+
+        </form>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %} >
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    </body>
+    </html>

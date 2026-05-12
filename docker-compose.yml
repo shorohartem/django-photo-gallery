@@ -1,0 +1,7 @@
+services:
+  web:
+    image: myapp
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./photos:/app/photos
