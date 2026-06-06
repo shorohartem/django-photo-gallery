@@ -5,16 +5,43 @@ from .models import Photo
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 import logging
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .serializers import PhotoSerializer
+import time
+
 
 logger = logging.getLogger(__name__)
 
+
+def log_request(request, response=None, extra=None):
+    user = request.user.id if request.user.is_authenticated else "Anonymous"
+    duration = time.time() - request.start_time if hasattr(request, 'start_time') else 0
+
+    log_data = {
+        'method': request.method,
+        'path': request.get_full_path(),
+        'ip': request.META.get('REMOTE_ADDR'),
+        'user': user,
+        'status': response.status_code if response else '???',
+        'duration': f"{duration:.3f}s"
+    }
+
+    if extra:
+        log_data.update(extra)
+
+    log_str = f"[{request.method}] {request.path} | IP: {log_data['ip']} | User: {user} | Status: {log_data['status']} | Time: {log_data['duration']}"
+    if extra:
+        log_str += f" | {extra}"
+
+    logger.info(log_str)
 
 def new_page(request):
     return render(request, 'new_page.html')
 
 @csrf_exempt
 def append(request):
-    logger.info(f"request.method: {request.method}")
+    request.start_time = time.time()
 
     if request.method == "POST" and request.FILES.get('photo'):
         photo_file = request.FILES.get('photo')
@@ -47,10 +74,15 @@ def append(request):
         messages.success(request, 'Фото добавлено!')
         logger.info(f'Фото {title} добавлено!')
         return redirect('append')
+    response = render(request, 'append.html')
+    log_request(request, response=response)
     return render(request, 'append.html')
 
 @csrf_exempt
 def delete(request):
+
+    request.start_time = time.time()
+
     if request.method == "POST":
         photo_id = request.POST.get('photo_id')
         logger.info(f'Запрошено удаление фото: {photo_id}')
@@ -68,10 +100,15 @@ def delete(request):
                 logger.info(f'Не найдено фото:{photo_id}')
         else:
             messages.error(request, 'Введите ID фото!')
+
+    response = render(request, 'delete.html')
+    log_request(request, response=response)
     return render(request, 'delete.html')
 
 
 def reception(request):
+    request.start_time = time.time()
+
     photo_id = request.GET.get('id')
     logger.info(f" Запрос на получение фото: {photo_id}")
 
@@ -89,10 +126,20 @@ def reception(request):
             return render(request, 'reception.html', {'photos': photos})
 
     photos = Photo.objects.all().order_by('-id')
+    response = render(request, 'reception.html')
+    log_request(request, response=response)
     return render(request, 'reception.html', {'photos': photos})
 
+
 def all_photo(request):
+    request.start_time = time.time()
+
     photos = Photo.objects.all().order_by('-id')
     logger.info("Получение всех фотографий")
+    response = render(request, 'all_photo.html')
+    log_request(request, response=response)
     return render(request, 'all_photo.html', {'photos': photos})
 
+class PhotoViewSet(viewsets.ModelViewSet):
+    queryset = Photo.objects.all()
+    serializer_class = PhotoSerializer

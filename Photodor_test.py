@@ -90,12 +90,6 @@ def test_get_photos():
 
 
 
-
-
-
-
-
-
 def test_delete_get_request():
     response = client.get('/delete/')
     assert response.status_code == 200
